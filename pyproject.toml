@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "omniplanner-adapters"
+version = "0.1.0"
+description = "Lightweight, secure device adapters for DimOS and Omniplanner"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+dependencies = [
+    "cryptography>=46",
+    "eclipse-zenoh>=1,<2",
+    "pydantic>=2.10,<3",
+    "typer>=0.19,<1",
+]
+
+[project.optional-dependencies]
+audio = ["numpy>=1.26", "sounddevice>=0.5"]
+test = ["pytest>=8", "pytest-mock>=3", "ruff>=0.11"]
+
+[project.scripts]
+dimos-adapter = "dimos_adapter.cli:app"
+
+[project.entry-points."dimos_adapter.capabilities"]
+audio = "dimos_adapter.audio:AudioCapability"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dimos_adapter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008"]
