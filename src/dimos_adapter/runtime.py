@@ -168,7 +168,7 @@ class AdapterRuntime:
             elif action == "audio.release":
                 audio.release(controller_id)
                 result = {"released": True}
-            elif action == "audio.session_status":
+            elif action == "session_status":
                 result = audio.session_status()
             else:
                 result = {"error": f"unknown action: {action}"}
