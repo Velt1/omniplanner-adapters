@@ -81,6 +81,11 @@ class AdapterState:
         pairings[controller_id] = pairing
         self._atomic_json(self.pairings_path, pairings)
 
+    def remove_pairing(self, controller_id: str) -> None:
+        pairings = self.pairings()
+        pairings.pop(controller_id, None)
+        self._atomic_json(self.pairings_path, pairings)
+
     def _atomic_json(self, path: Path, value: Any) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".tmp")

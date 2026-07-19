@@ -170,6 +170,9 @@ class AdapterRuntime:
                 result = {"released": True}
             elif action == "session_status":
                 result = audio.session_status()
+            elif action == "controller.revoke":
+                audio.release(controller_id)
+                result = {"revoked": True}
             else:
                 result = {"error": f"unknown action: {action}"}
             response = canonical_json({"request_id": request["request_id"], "result": result})
@@ -177,6 +180,9 @@ class AdapterRuntime:
                 f"{SESSION_PREFIX}/{self.identity.device_id}/{controller_id}/control/response",
                 channels["control_response"].encrypt(response),
             )
+            if action == "controller.revoke":
+                self.state.remove_pairing(controller_id)
+                self._channels.pop(controller_id, None)
         except Exception:
             return
 
