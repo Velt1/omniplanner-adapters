@@ -61,6 +61,16 @@ class AdapterState:
             self.token_path.unlink(missing_ok=True)
         return valid
 
+    def active_token(self) -> EnrollmentToken | None:
+        if not self.token_path.exists():
+            return None
+        payload = json.loads(self.token_path.read_text())
+        token = EnrollmentToken(payload["value"], payload["expires_at"])
+        return None if token.expired else token
+
+    def consume_active_token(self) -> None:
+        self.token_path.unlink(missing_ok=True)
+
     def pairings(self) -> dict[str, dict[str, Any]]:
         if not self.pairings_path.exists():
             return {}

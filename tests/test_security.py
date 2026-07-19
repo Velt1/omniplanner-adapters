@@ -11,6 +11,7 @@ from dimos_adapter.security import (
     verify_manifest,
     verify_pairing_proof,
 )
+from dimos_adapter.state import AdapterState
 
 
 def test_signed_manifest_detects_tampering() -> None:
@@ -70,3 +71,13 @@ def test_secure_channel_encrypts_and_rejects_replay_and_tampering() -> None:
     tampered = envelope[:-1] + bytes([envelope[-1] ^ 1])
     with pytest.raises(InvalidTag):
         fresh_receiver.decrypt(tampered)
+
+
+def test_enrollment_token_is_single_use(tmp_path) -> None:
+    state = AdapterState(tmp_path)
+    state.initialize("Audio")
+    token = state.create_token()
+
+    assert state.active_token() == token
+    assert state.consume_token(token.value)
+    assert state.active_token() is None
